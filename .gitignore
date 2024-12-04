@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+venv/
+.venv/
+
+# Streamlit
+.streamlit/
+
+# Data files (if you don't want to include them)
+data/*.csv
+
+# System files
+.DS_Store
