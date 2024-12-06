@@ -63,6 +63,7 @@ try:
     
     # 1. Sales Performance Metrics
     st.header('Sales Performance')
+    st.markdown("*Key metrics showing overall sales performance, orders, and product category analysis*")
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
@@ -94,6 +95,7 @@ try:
 
     # 2. Fulfillment Metrics
     st.header('Fulfillment Metrics')
+    st.markdown("*Analysis of order status, fulfillment methods, and shipping service preferences*")
     col1, col2 = st.columns(2)
     
     with col1:
@@ -127,6 +129,7 @@ try:
 
     # 3. Geographic Metrics
     st.header('Geographic Metrics')
+    st.markdown("*Distribution of sales and orders across different states and cities*")
     
     # Sales by State
     state_sales = filtered_df.groupby('ship-state')['Amount'].sum().reset_index()
@@ -154,6 +157,7 @@ try:
 
     # 4. Customer Insights
     st.header('Customer Insights')
+    st.markdown("*Understanding customer segments and ordering patterns through B2B/B2C split and order sizes*")
     col1, col2 = st.columns(2)
     
     with col1:
@@ -177,6 +181,7 @@ try:
 
     # 5. Operational Efficiency
     st.header('Operational Efficiency')
+    st.markdown("*Key performance indicators for business operations including cancellations and promotions*")
     col1, col2, col3 = st.columns(3)
     
     with col1:
@@ -195,6 +200,7 @@ try:
 
     # 6. Trends Over Time
     st.header('Trends Over Time')
+    st.markdown("*Historical analysis of daily sales and order volume patterns*")
     
     # Daily sales trend
     daily_sales = filtered_df.groupby('Date')['Amount'].sum().reset_index()
