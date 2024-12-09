@@ -222,5 +222,73 @@ try:
     )
     st.plotly_chart(fig_orders, use_container_width=True)
 
+    # Month-over-Month Growth Analysis
+    # Create monthly sales dataframe
+    monthly_sales = filtered_df.groupby(filtered_df['Date'].dt.to_period('M'))['Amount'].sum()
+    monthly_sales_df = pd.DataFrame(monthly_sales).reset_index()
+    monthly_sales_df['Date'] = monthly_sales_df['Date'].astype(str)
+    
+    # Calculate MoM growth rate
+    monthly_sales_df['MoM Growth Rate'] = monthly_sales_df['Amount'].pct_change() * 100
+    
+    # Create a figure with dual y-axes
+    fig_mom = go.Figure()
+    
+    # Add monthly sales bars
+    fig_mom.add_trace(
+        go.Bar(
+            x=monthly_sales_df['Date'],
+            y=monthly_sales_df['Amount'],
+            name='Monthly Sales',
+            yaxis='y'
+        )
+    )
+    
+    # Add MoM growth rate line
+    fig_mom.add_trace(
+        go.Scatter(
+            x=monthly_sales_df['Date'],
+            y=monthly_sales_df['MoM Growth Rate'],
+            name='MoM Growth Rate (%)',
+            yaxis='y2',
+            line=dict(color='red')
+        )
+    )
+    
+    # Update layout for dual axes
+    fig_mom.update_layout(
+        title='Monthly Sales and Growth Rate',
+        yaxis=dict(title='Sales Amount ($)', side='left'),
+        yaxis2=dict(
+            title='MoM Growth Rate (%)',
+            side='right',
+            overlaying='y',
+            tickformat='.1f'
+        ),
+        showlegend=True
+    )
+    
+    st.plotly_chart(fig_mom, use_container_width=True)
+
+    # Display monthly performance metrics
+    st.subheader("Monthly Performance Summary")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        avg_growth = monthly_sales_df['MoM Growth Rate'].mean()
+        st.metric(
+            "Average Monthly Growth Rate",
+            f"{avg_growth:.1f}%",
+            delta=f"{monthly_sales_df['MoM Growth Rate'].iloc[-1]:.1f}% (Last Month)"
+        )
+    
+    with col2:
+        highest_month = monthly_sales_df.loc[monthly_sales_df['Amount'].idxmax()]
+        st.metric(
+            "Best Performing Month",
+            f"${highest_month['Amount']:,.2f}",
+            delta=highest_month['Date']
+        )
+
 except Exception as e:
     st.error(f"Error loading data: {str(e)}")
