@@ -290,5 +290,112 @@ try:
             delta=highest_month['Date']
         )
 
+    # 7. Sales Velocity Analysis
+    st.header('Sales Velocity Analysis')
+    st.markdown("*Analysis of sales speed and product movement patterns across categories*")
+
+    # Calculate daily sales velocity metrics
+    velocity_df = filtered_df.copy()
+    
+    # Group by date and category to get daily sales per category
+    daily_category_sales = velocity_df.groupby(['Date', 'Category']).agg({
+        'Qty': 'sum',
+        'Amount': 'sum',
+        'Order ID': 'nunique'
+    }).reset_index()
+
+    # Calculate rolling 7-day average for smoother trends
+    category_velocity = daily_category_sales.groupby('Category').agg({
+        'Qty': lambda x: x.rolling(7, min_periods=1).mean().mean(),  # Average daily units sold
+        'Amount': lambda x: x.rolling(7, min_periods=1).mean().mean(),  # Average daily revenue
+        'Order ID': lambda x: x.rolling(7, min_periods=1).mean().mean()  # Average daily orders
+    }).reset_index()
+
+    # Calculate velocity score (normalized composite score)
+    category_velocity['Velocity Score'] = (
+        (category_velocity['Qty'] / category_velocity['Qty'].max()) * 0.4 +
+        (category_velocity['Amount'] / category_velocity['Amount'].max()) * 0.4 +
+        (category_velocity['Order ID'] / category_velocity['Order ID'].max()) * 0.2
+    ) * 100
+
+    # Sort by velocity score
+    category_velocity = category_velocity.sort_values('Velocity Score', ascending=False)
+
+    # Display velocity metrics
+    col1, col2 = st.columns(2)
+
+    with col1:
+        # Velocity score by category
+        fig_velocity = px.bar(
+            category_velocity,
+            x='Category',
+            y='Velocity Score',
+            title='Product Category Velocity Scores',
+            labels={'Velocity Score': 'Velocity Score (0-100)'}
+        )
+        fig_velocity.update_traces(marker_color='lightseagreen')
+        st.plotly_chart(fig_velocity, use_container_width=True)
+
+    with col2:
+        # Daily units movement by category
+        fig_units = px.bar(
+            category_velocity,
+            x='Category',
+            y='Qty',
+            title='Average Daily Units Sold by Category',
+            labels={'Qty': 'Units per Day'}
+        )
+        fig_units.update_traces(marker_color='coral')
+        st.plotly_chart(fig_units, use_container_width=True)
+
+    # Display top performing categories
+    st.subheader("Category Performance Insights")
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        top_velocity = category_velocity.iloc[0]
+        st.metric(
+            "Fastest Moving Category",
+            top_velocity['Category'],
+            f"Score: {top_velocity['Velocity Score']:.1f}"
+        )
+
+    with col2:
+        top_units = category_velocity.loc[category_velocity['Qty'].idxmax()]
+        st.metric(
+            "Highest Volume Category",
+            top_units['Category'],
+            f"{top_units['Qty']:.1f} units/day"
+        )
+
+    with col3:
+        top_revenue = category_velocity.loc[category_velocity['Amount'].idxmax()]
+        st.metric(
+            "Highest Revenue Category",
+            top_revenue['Category'],
+            f"${top_revenue['Amount']:.2f}/day"
+        )
+
+    # Add detailed velocity table with sorting
+    st.subheader("Detailed Velocity Metrics")
+    st.markdown("*Click on columns to sort by different metrics*")
+    
+    # Format the detailed metrics table
+    detailed_velocity = category_velocity.copy()
+    detailed_velocity['Qty'] = detailed_velocity['Qty'].round(1)
+    detailed_velocity['Amount'] = detailed_velocity['Amount'].round(2)
+    detailed_velocity['Order ID'] = detailed_velocity['Order ID'].round(1)
+    detailed_velocity['Velocity Score'] = detailed_velocity['Velocity Score'].round(1)
+    
+    # Rename columns for better readability
+    detailed_velocity.columns = ['Category', 'Avg Daily Units', 'Avg Daily Revenue', 
+                               'Avg Daily Orders', 'Velocity Score']
+    
+    st.dataframe(
+        detailed_velocity,
+        hide_index=True,
+        use_container_width=True
+    )
+
 except Exception as e:
     st.error(f"Error loading data: {str(e)}")
