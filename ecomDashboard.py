@@ -15,18 +15,37 @@ st.set_page_config(
 # Function to load and clean data
 @st.cache_data
 def load_data():
-    df = pd.read_csv("data/Amazon Sale Report.csv")
+    try:
+        # Read CSV with low_memory=False to handle mixed types
+        df = pd.read_csv("data/Amazon Sale Report.csv", low_memory=False)
+        
+        # Create a copy to avoid SettingWithCopyWarning
+        df = df.copy()
+        
+        # First, ensure the Date column contains string values
+        df['Date'] = df['Date'].astype(str)
+        
+        # Convert Date with explicit format for MM-DD-YY
+        df['Date'] = pd.to_datetime(df['Date'], format='%m-%d-%y', errors='coerce')
+        
+        # Drop any rows where Date conversion failed
+        df = df.dropna(subset=['Date'])
+        
+        # Convert numeric columns
+        df['Amount'] = pd.to_numeric(df['Amount'], errors='coerce')
+        df['Qty'] = pd.to_numeric(df['Qty'], errors='coerce')
+        
+        # Fill missing values using proper pandas methods
+        df = df.assign(**{
+            'ship-postal-code': df['ship-postal-code'].astype(str).replace('nan', 'Unknown'),
+            'promotion-ids': df['promotion-ids'].fillna('No Promotion')
+        })
+        
+        return df
     
-    # Data cleaning
-    df['Date'] = pd.to_datetime(df['Date'])
-    df['Amount'] = pd.to_numeric(df['Amount'], errors='coerce')
-    df['Qty'] = pd.to_numeric(df['Qty'], errors='coerce')
-    
-    # Fill missing values
-    df['ship-postal-code'].fillna('Unknown', inplace=True)
-    df['promotion-ids'].fillna('No Promotion', inplace=True)
-    
-    return df
+    except Exception as e:
+        st.error(f"Error in data loading: {str(e)}")
+        raise e
 
 # Load the data
 try:
