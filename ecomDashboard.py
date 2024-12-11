@@ -5,12 +5,44 @@ import plotly.graph_objects as go
 from datetime import datetime
 import numpy as np
 
+# Get current time for greeting
+current_time = datetime.now()
+hour = current_time.hour
+
+# Determine greeting based on time of day
+if 4 <= hour < 12:
+    greeting = "Good morning!"
+elif 12 <= hour < 18:
+    greeting = "Good afternoon!"
+else:
+    greeting = "Good evening!"
+
+# Get today's date
+today_date = current_time.strftime("%B %d, %Y")
+
 # Page configuration
 st.set_page_config(
     page_title="Amazon Sales Dashboard",
     page_icon=":chart:",
     layout="wide"
 )
+
+# Page title and welcome section
+st.title("Platform Sales Dashboard - All Channels")
+
+# Welcome section with dynamic greeting and date
+st.markdown(f"""
+    ### {greeting}
+    #### Today is {today_date}
+    
+    Welcome to our comprehensive sales analytics dashboard. This tool provides detailed insights 
+    into our e-commerce performance across all sales channels. The data presented here is sourced 
+    from our platform's sales reports and is updated regularly to ensure accurate decision-making 
+    and performance tracking.
+""")
+
+# Add a visual separator
+st.markdown("---")
 
 # Function to load and clean data
 @st.cache_data
@@ -67,9 +99,6 @@ try:
     # Region filter
     regions = ['All'] + list(df['ship-state'].unique())
     selected_region = st.sidebar.selectbox('Select Region', regions)
-    
-    # Main dashboard
-    st.title('Amazon Sales Dashboard')
     
     # Apply filters
     mask = (df['Date'].dt.date >= date_range[0]) & (df['Date'].dt.date <= date_range[1])
