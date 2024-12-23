@@ -57,8 +57,8 @@ def load_data():
         # First, ensure the Date column contains string values
         df['Date'] = df['Date'].astype(str)
         
-        # Convert Date with explicit format for MM-DD-YY
-        df['Date'] = pd.to_datetime(df['Date'], format='%m-%d-%y', errors='coerce')
+        # Convert Date with explicit format (adjust format string if needed)
+        df['Date'] = pd.to_datetime(df['Date'], format='%d-%m-%Y', errors='coerce')
         
         # Drop any rows where Date conversion failed
         df = df.dropna(subset=['Date'])
