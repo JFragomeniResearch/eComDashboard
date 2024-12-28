@@ -445,5 +445,103 @@ try:
         use_container_width=True
     )
 
+    # 8. Promotion Analysis
+    st.header('Promotion Analysis')
+    st.markdown("*Analysis of promotional campaign effectiveness and impact on sales*")
+
+    # Create promotion analysis dataframe
+    promo_df = filtered_df.copy()
+    
+    # Group by promotion ID
+    promo_analysis = promo_df.groupby('promotion-ids').agg({
+        'Order ID': 'nunique',  # Number of orders
+        'Amount': 'sum',        # Total revenue
+        'Qty': 'sum'           # Total units sold
+    }).reset_index()
+    
+    # Calculate average order value for each promotion
+    promo_analysis['Avg Order Value'] = promo_analysis['Amount'] / promo_analysis['Order ID']
+    
+    # Calculate average units per order
+    promo_analysis['Avg Units per Order'] = promo_analysis['Qty'] / promo_analysis['Order ID']
+    
+    # Sort by revenue
+    promo_analysis = promo_analysis.sort_values('Amount', ascending=False)
+
+    # Display promotion metrics
+    col1, col2 = st.columns(2)
+
+    with col1:
+        # Top promotions by revenue
+        fig_promo_rev = px.bar(
+            promo_analysis.head(10),
+            x='promotion-ids',
+            y='Amount',
+            title='Top 10 Promotions by Revenue',
+            labels={'promotion-ids': 'Promotion ID', 'Amount': 'Revenue ($)'}
+        )
+        fig_promo_rev.update_traces(marker_color='teal')
+        st.plotly_chart(fig_promo_rev, use_container_width=True)
+
+    with col2:
+        # Average order value by promotion
+        fig_promo_aov = px.bar(
+            promo_analysis.head(10),
+            x='promotion-ids',
+            y='Avg Order Value',
+            title='Average Order Value by Promotion',
+            labels={'promotion-ids': 'Promotion ID', 'Avg Order Value': 'AOV ($)'}
+        )
+        fig_promo_aov.update_traces(marker_color='coral')
+        st.plotly_chart(fig_promo_aov, use_container_width=True)
+
+    # Promotion performance metrics
+    st.subheader("Promotion Performance Summary")
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        top_promo = promo_analysis.iloc[0]
+        st.metric(
+            "Best Performing Promotion",
+            top_promo['promotion-ids'],
+            f"${top_promo['Amount']:,.2f} Revenue"
+        )
+
+    with col2:
+        highest_aov = promo_analysis.loc[promo_analysis['Avg Order Value'].idxmax()]
+        st.metric(
+            "Highest AOV Promotion",
+            highest_aov['promotion-ids'],
+            f"${highest_aov['Avg Order Value']:,.2f}"
+        )
+
+    with col3:
+        highest_units = promo_analysis.loc[promo_analysis['Avg Units per Order'].idxmax()]
+        st.metric(
+            "Highest Units/Order Promotion",
+            highest_units['promotion-ids'],
+            f"{highest_units['Avg Units per Order']:.1f} Units"
+        )
+
+    # Detailed promotion metrics table
+    st.subheader("Detailed Promotion Metrics")
+    st.markdown("*Click on columns to sort by different metrics*")
+    
+    # Format the detailed metrics table
+    detailed_promos = promo_analysis.copy()
+    detailed_promos['Amount'] = detailed_promos['Amount'].round(2)
+    detailed_promos['Avg Order Value'] = detailed_promos['Avg Order Value'].round(2)
+    detailed_promos['Avg Units per Order'] = detailed_promos['Avg Units per Order'].round(1)
+    
+    # Rename columns for better readability
+    detailed_promos.columns = ['Promotion ID', 'Number of Orders', 'Total Revenue', 
+                             'Total Units', 'Avg Order Value', 'Avg Units per Order']
+    
+    st.dataframe(
+        detailed_promos,
+        hide_index=True,
+        use_container_width=True
+    )
+
 except Exception as e:
     st.error(f"Error loading data: {str(e)}")
