@@ -5,6 +5,28 @@ import plotly.graph_objects as go
 from datetime import datetime
 import numpy as np
 
+# Custom color palette and theme for consistent visualization
+plotly_template = {
+    'layout': {
+        'plot_bgcolor': 'rgba(0, 0, 0, 0)',
+        'paper_bgcolor': 'rgba(0, 0, 0, 0)',
+        'font': {'color': '#2c3e50'},
+        'title': {'font': {'color': '#2c3e50', 'size': 24}},
+        'xaxis': {
+            'gridcolor': '#f1f3f6',
+            'linecolor': '#d3d3d3'
+        },
+        'yaxis': {
+            'gridcolor': '#f1f3f6',
+            'linecolor': '#d3d3d3'
+        }
+    }
+}
+
+# Custom color palette
+custom_colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', 
+                '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+
 # Get current time for greeting
 current_time = datetime.now()
 hour = current_time.hour
@@ -58,7 +80,7 @@ def load_data():
         df['Date'] = df['Date'].astype(str)
         
         # Convert Date with explicit format (adjust format string if needed)
-        df['Date'] = pd.to_datetime(df['Date'], format='%d-%m-%Y', errors='coerce')
+        df['Date'] = pd.to_datetime(df['Date'], format='%m-%d-%y', errors='coerce')
         
         # Drop any rows where Date conversion failed
         df = df.dropna(subset=['Date'])
@@ -137,7 +159,9 @@ try:
         category_sales,
         x='Category',
         y='Amount',
-        title='Sales by Category'
+        title='Sales by Category',
+        template=plotly_template,
+        color_discrete_sequence=custom_colors
     )
     st.plotly_chart(fig_category, use_container_width=True)
 
@@ -152,7 +176,9 @@ try:
         fig_status = px.pie(
             values=status_dist.values,
             names=status_dist.index,
-            title='Order Status Distribution'
+            title='Order Status Distribution',
+            template=plotly_template,
+            color_discrete_sequence=custom_colors
         )
         st.plotly_chart(fig_status)
     
@@ -162,7 +188,9 @@ try:
         fig_fulfillment = px.pie(
             values=fulfillment_dist.values,
             names=fulfillment_dist.index,
-            title='Fulfillment Method Distribution'
+            title='Fulfillment Method Distribution',
+            template=plotly_template,
+            color_discrete_sequence=custom_colors
         )
         st.plotly_chart(fig_fulfillment)
 
@@ -171,7 +199,9 @@ try:
     fig_shipping = px.bar(
         x=shipping_dist.index,
         y=shipping_dist.values,
-        title='Shipping Service Level Usage'
+        title='Shipping Service Level Usage',
+        template=plotly_template,
+        color_discrete_sequence=custom_colors
     )
     st.plotly_chart(fig_shipping, use_container_width=True)
 
@@ -187,7 +217,9 @@ try:
         state_sales.head(10),
         x='ship-state',
         y='Amount',
-        title='Top 10 States by Sales'
+        title='Top 10 States by Sales',
+        template=plotly_template,
+        color_discrete_sequence=custom_colors
     )
     st.plotly_chart(fig_state, use_container_width=True)
 
@@ -199,7 +231,9 @@ try:
         city_orders.head(10),
         x='ship-city',
         y='count',
-        title='Top 10 Cities by Number of Orders'
+        title='Top 10 Cities by Number of Orders',
+        template=plotly_template,
+        color_discrete_sequence=custom_colors
     )
     st.plotly_chart(fig_city, use_container_width=True)
 
@@ -214,7 +248,9 @@ try:
         fig_b2b = px.pie(
             values=b2b_split.values,
             names=b2b_split.index,
-            title='B2B vs B2C Orders'
+            title='B2B vs B2C Orders',
+            template=plotly_template,
+            color_discrete_sequence=custom_colors
         )
         st.plotly_chart(fig_b2b)
     
@@ -223,7 +259,9 @@ try:
         fig_order_size = px.histogram(
             filtered_df,
             x='Qty',
-            title='Order Size Distribution'
+            title='Order Size Distribution',
+            template=plotly_template,
+            color_discrete_sequence=custom_colors
         )
         st.plotly_chart(fig_order_size)
 
@@ -256,7 +294,9 @@ try:
         daily_sales,
         x='Date',
         y='Amount',
-        title='Daily Sales Trend'
+        title='Daily Sales Trend',
+        template=plotly_template,
+        color_discrete_sequence=custom_colors
     )
     st.plotly_chart(fig_trend, use_container_width=True)
 
@@ -266,7 +306,9 @@ try:
         daily_orders,
         x='Date',
         y='Order ID',
-        title='Daily Order Volume'
+        title='Daily Order Volume',
+        template=plotly_template,
+        color_discrete_sequence=custom_colors
     )
     st.plotly_chart(fig_orders, use_container_width=True)
 
@@ -313,7 +355,11 @@ try:
             overlaying='y',
             tickformat='.1f'
         ),
-        showlegend=True
+        showlegend=True,
+        template=plotly_template,
+        plot_bgcolor='rgba(0, 0, 0, 0)',
+        paper_bgcolor='rgba(0, 0, 0, 0)',
+        font={'color': '#2c3e50'}
     )
     
     st.plotly_chart(fig_mom, use_container_width=True)
@@ -379,7 +425,9 @@ try:
             x='Category',
             y='Velocity Score',
             title='Product Category Velocity Scores',
-            labels={'Velocity Score': 'Velocity Score (0-100)'}
+            labels={'Velocity Score': 'Velocity Score (0-100)'},
+            template=plotly_template,
+            color_discrete_sequence=custom_colors
         )
         fig_velocity.update_traces(marker_color='lightseagreen')
         st.plotly_chart(fig_velocity, use_container_width=True)
@@ -391,7 +439,9 @@ try:
             x='Category',
             y='Qty',
             title='Average Daily Units Sold by Category',
-            labels={'Qty': 'Units per Day'}
+            labels={'Qty': 'Units per Day'},
+            template=plotly_template,
+            color_discrete_sequence=custom_colors
         )
         fig_units.update_traces(marker_color='coral')
         st.plotly_chart(fig_units, use_container_width=True)
@@ -478,7 +528,9 @@ try:
             x='promotion-ids',
             y='Amount',
             title='Top 10 Promotions by Revenue',
-            labels={'promotion-ids': 'Promotion ID', 'Amount': 'Revenue ($)'}
+            labels={'promotion-ids': 'Promotion ID', 'Amount': 'Revenue ($)'},
+            template=plotly_template,
+            color_discrete_sequence=custom_colors
         )
         fig_promo_rev.update_traces(marker_color='teal')
         st.plotly_chart(fig_promo_rev, use_container_width=True)
@@ -490,7 +542,9 @@ try:
             x='promotion-ids',
             y='Avg Order Value',
             title='Average Order Value by Promotion',
-            labels={'promotion-ids': 'Promotion ID', 'Avg Order Value': 'AOV ($)'}
+            labels={'promotion-ids': 'Promotion ID', 'Avg Order Value': 'AOV ($)'},
+            template=plotly_template,
+            color_discrete_sequence=custom_colors
         )
         fig_promo_aov.update_traces(marker_color='coral')
         st.plotly_chart(fig_promo_aov, use_container_width=True)
@@ -542,6 +596,50 @@ try:
         hide_index=True,
         use_container_width=True
     )
+
+    # Add custom CSS for consistent styling
+    st.markdown("""
+        <style>
+        /* Main content styling */
+        .main {
+            background-color: #f8f9fa;
+        }
+        
+        /* Metric containers */
+        div[data-testid="stMetric"] {
+            background-color: #ffffff;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* Metric labels */
+        div[data-testid="stMetricLabel"] {
+            font-size: 1rem;
+            color: #484848;
+        }
+        
+        /* Metric values */
+        div[data-testid="stMetricValue"] {
+            color: #1f77b4;
+        }
+        
+        /* Section headers */
+        h1, h2, h3 {
+            color: #2c3e50;
+            font-weight: 600;
+            padding-top: 1rem;
+        }
+        
+        /* Chart containers */
+        div[data-testid="stPlotlyChart"] > div {
+            background-color: #ffffff;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1rem;
+        }
+        </style>
+        """, unsafe_allow_html=True)
 
 except Exception as e:
     st.error(f"Error loading data: {str(e)}")
