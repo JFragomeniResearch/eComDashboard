@@ -8,24 +8,26 @@ import numpy as np
 # Custom color palette and theme for consistent visualization
 plotly_template = {
     'layout': {
-        'plot_bgcolor': 'rgba(0, 0, 0, 0)',
-        'paper_bgcolor': 'rgba(0, 0, 0, 0)',
-        'font': {'color': '#2c3e50'},
-        'title': {'font': {'color': '#2c3e50', 'size': 24}},
+        'plot_bgcolor': '#2c2f33',
+        'paper_bgcolor': '#2c2f33',
+        'font': {'color': '#ffffff'},
+        'title': {'font': {'color': '#ffffff', 'size': 24}},
         'xaxis': {
-            'gridcolor': '#f1f3f6',
-            'linecolor': '#d3d3d3'
+            'gridcolor': '#40444b',
+            'linecolor': '#40444b',
+            'tickfont': {'color': '#ffffff'}
         },
         'yaxis': {
-            'gridcolor': '#f1f3f6',
-            'linecolor': '#d3d3d3'
+            'gridcolor': '#40444b',
+            'linecolor': '#40444b',
+            'tickfont': {'color': '#ffffff'}
         }
     }
 }
 
 # Custom color palette
-custom_colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', 
-                '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+custom_colors = ['#7289da', '#43b581', '#faa61a', '#f04747', '#b9bbbe',
+                '#00b0f4', '#8ea1e1', '#eb459e', '#2ecc71', '#e91e63']
 
 # Get current time for greeting
 current_time = datetime.now()
@@ -44,9 +46,10 @@ today_date = current_time.strftime("%B %d, %Y")
 
 # Page configuration
 st.set_page_config(
-    page_title="Amazon Sales Dashboard",
-    page_icon=":chart:",
-    layout="wide"
+    page_title="Platform Sales Dashboard - All Channels",
+    page_icon="📊",
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
 # Page title and welcome section
@@ -600,43 +603,89 @@ try:
     # Add custom CSS for consistent styling
     st.markdown("""
         <style>
-        /* Main content styling */
+        /* Main content and background styling */
         .main {
-            background-color: #f8f9fa;
+            background-color: #36393f;
+            color: #ffffff;
+        }
+        
+        /* Sidebar styling */
+        .css-1d391kg {
+            background-color: #2f3136;
         }
         
         /* Metric containers */
         div[data-testid="stMetric"] {
-            background-color: #ffffff;
+            background-color: #2c2f33;
             padding: 1rem;
             border-radius: 0.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #40444b;
         }
         
         /* Metric labels */
         div[data-testid="stMetricLabel"] {
             font-size: 1rem;
-            color: #484848;
+            color: #dcddde;
         }
         
         /* Metric values */
         div[data-testid="stMetricValue"] {
-            color: #1f77b4;
+            color: #7289da;
         }
         
         /* Section headers */
         h1, h2, h3 {
-            color: #2c3e50;
+            color: #ffffff;
             font-weight: 600;
             padding-top: 1rem;
         }
         
         /* Chart containers */
         div[data-testid="stPlotlyChart"] > div {
-            background-color: #ffffff;
+            background-color: #2c2f33;
             border-radius: 0.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #40444b;
             padding: 1rem;
+        }
+        
+        /* DataFrame styling */
+        .dataframe {
+            background-color: #2c2f33;
+            color: #ffffff;
+        }
+        
+        /* Text and markdown */
+        .markdown-text-container {
+            color: #dcddde;
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+        
+        /* Streamlit base elements */
+        .stTextInput > div > div > input {
+            background-color: #40444b;
+            color: #ffffff;
+        }
+        
+        .stSelectBox > div > div > select {
+            background-color: #40444b;
+            color: #ffffff;
+        }
+        
+        /* Links */
+        a {
+            color: #00b0f4;
+        }
+        
+        /* Sidebar text */
+        .css-pkbazv {
+            color: #ffffff;
+        }
+        
+        /* Make sure text inputs and selectors are visible */
+        .stDateInput, .stSelectbox {
+            background-color: #40444b;
+            color: #ffffff;
         }
         </style>
         """, unsafe_allow_html=True)
